@@ -1,11 +1,11 @@
 package variable
 
-type coordinate [2]int
+type Coordinate [2]int
 
 var (
-	List1 = map[coordinate]bool{} // AI
-	List2 = map[coordinate]bool{} // human
-	List3 = map[coordinate]bool{} // all
+	List1 = map[Coordinate]bool{} // AI
+	List2 = map[Coordinate]bool{} // human
+	List3 = map[Coordinate]bool{} // all
 
 	ListAll   = []int{}      // 整个棋盘的点
 	NextPoint = [2]int{0, 0} // AI下一步最应该下的点
