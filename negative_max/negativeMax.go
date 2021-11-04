@@ -21,7 +21,7 @@ func AI() [2]int {
 
 func negaMax(isAI bool, depth, alpha, beta int) int {
 	// 判断游戏是否结束 || 搜索深度是否达到
-	if gameWin(variable.List1) || gameWin(variable.List2) || depth == 0 {
+	if GameWin(variable.List1) || GameWin(variable.List2) || depth == 0 {
 		return evaluation(isAI)
 	}
 	// blankList是棋面上还没有下的点
@@ -69,7 +69,7 @@ func negaMax(isAI bool, depth, alpha, beta int) int {
 	return alpha
 }
 
-func gameWin(list map[variable.Coordinate]bool) bool {
+func GameWin(list map[variable.Coordinate]bool) bool {
 	for m := 0; m < variable.COLUMN; m++ {
 		for n := 0; n < variable.ROW; n++ {
 			if n < variable.ROW-4 &&
