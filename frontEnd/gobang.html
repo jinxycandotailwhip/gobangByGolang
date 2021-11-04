@@ -203,154 +203,16 @@
             transform: scaleY(0.5);
         }
     </style>
-    <script>
-        // onload为浏览器对象中的事件,页面载入时触发 
-        window.onload = function() {
-            var grid;
-            var chessArr = [];
-            var timer = 0;
-            var lineNum = parseInt(gridNum.innerHTML);
-            // 获取元素 
-            var box = document.getElementById('chessboard');
-            var chessBox = box.getElementsByTagName('div');
-            var submitBtn = document.getElementById('submitBtn');
-            // 减去规格 
-            subBtn.onclick = function() {
-                    if (lineNum > 8) {
-                        lineNum--;
-                    }
-                    // innerHTML为gridNum的全元素 
-                    gridNum.innerHTML = lineNum;
-                }
-                // 加上规格 
-            addBtn.onclick = function() {
-                    if (lineNum < 14) {
-                        lineNum++;
-                    }
-                    gridNum.innerHTML = lineNum;
-                }
-                //棋盘初始化 
-            submitBtn.onclick = function() {
-                    var chessMaxNum = lineNum * lineNum;
-                    var chessWH = 90 / lineNum;
-                    for (var i = 0; i < chessMaxNum; i++) {
-                        // 设置棋盘里小格子div元素 
-                        grid = document.createElement('div');
-                        grid.style.width = 'calc(' + chessWH + 'vmin - 2px)';
-                        grid.style.height = 'calc(' + chessWH + 'vmin - 2px)';
-                        grid.id = i;
-                        box.appendChild(grid);
-                        chessArr[i] = 0;
-                        grid.onclick = function(x) {
-                            // target 事件属性可返回事件的目标节点（触发该事件的节点），如生成事件的元素、文档或窗口。 
-                            var index = x.target.id || x.target.parentNode.id;
-                            return playChess(index);
-                        };
-                    };
-                    mask.style.display = 'none';
-                }
-                //棋子对象 
-            function Chess() {
-                this.color = 'white';
-                this.site = 0;
-                // 创建一个class 
-                this.chessDom = function() {
-                    // 创造新节点 
-                    var dom = document.createElement('p');
-                    // 将这个名字给class 
-                    dom.setAttribute('class', this.color);
-                    return dom;
-                }
-                this.ligature = function(arr) {
-                    // map() 方法返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值。 
-                    //是就返回这个site 
-                    // 给白棋一个标识号,方便在下列judge中判断 
-                    var whiteChess = arr.map(function(s) {
-                        // parseInt() 函数可解析一个字符串，并返回一个整数。 
-                        return (s.color == 'white') ? parseInt(s.site) : 0;
-                    });
-                    var blackChess = arr.map(function(s) {
-                        return (s.color == 'black') ? parseInt(s.site) : 0;
-                    });
-                    judge(whiteChess, '白子');
-                    judge(blackChess, '黑子');
-
-                    function judge(che, color) {
-                        // length 属性可返回字符串中的字符数目 
-                        for (var i = 0; i < che.length; i++) {
-                            // 棋子横坐标 
-                            var x = che[i] % lineNum;
-                            // 棋子竖坐标 
-                            var y = parseInt(che[i] / lineNum);
-                            // \这样的倾斜判断 
-                            if (x <= lineNum - 5 && y <= lineNum - 5 && che[i] != 0) {
-                                if (che[i + 1 * lineNum + 1] != 0 && che[i + 2 * lineNum + 2] != 0 && che[i + 3 * lineNum + 3] != 0 && che[i + 4 * lineNum + 4] != 0) {
-                                    alert(color + '获胜!');
-                                    // 胜利后刷新页面 
-                                    location.replace(location);
-                                    return true;
-                                }
-                            };
-                            // |这样的竖直判断 
-                            if (y <= lineNum - 5 && che[i] != 0) {
-                                if (che[i + 1 * lineNum] != 0 && che[i + 2 * lineNum] != 0 && che[i + 3 * lineNum] != 0 && che[i + 4 * lineNum] != 0) {
-                                    alert(color + '获胜!');
-                                    // Location 对象方法replace() 用新的文档替换当前文档 
-                                    location.replace(location);
-                                    return true;
-                                }
-                            };
-                            // /这样的倾斜判断 
-                            if (x >= 4 && y <= lineNum - 5 && che[i] != 0) {
-                                if (che[i + 1 * lineNum - 1] != 0 && che[i + 2 * lineNum - 2] != 0 && che[i + 3 * lineNum - 3] != 0 && che[i + 4 * lineNum - 4] != 0) {
-                                    alert(color + '获胜!');
-                                    location.replace(location);
-                                    return true;
-                                }
-                            };
-                            // ——这样的平行判断 
-                            if (x <= lineNum - 5 && che[i] != 0) {
-                                if (che[i + 1] != 0 && che[i + 2] != 0 && che[i + 3] != 0 && che[i + 4] != 0) {
-                                    alert(color + '获胜!');
-                                    location.replace(location);
-                                    return true;
-                                }
-                            };
-                        };
-                    }
-                }
-            }
-
-            function playChess(i) {
-                if (chessArr[i] == 0) {
-                    // 标识符 
-                    timer++;
-                    // 用new创建新的对象 
-                    chessArr[i] = new Chess();
-                    timer % 2 == 0 ? chessArr[i].color = 'black' : chessArr[i].color = 'white';
-                    // 给每个小格子设置一个site值 
-                    chessArr[i].site = i;
-                    // appendChild() 方法向节点添加最后一个子节点 
-                    // 意思就是在小格子div里加上棋子的class 
-                    chessBox[i].appendChild(chessArr[i].chessDom());
-                    // 给这个class的棋子赋予site值 
-                    chessArr[i].ligature(chessArr);
-                } else {
-                    alert('此处有子!');
-                }
-            }
-        };
-    </script>
+    <script src="./chess.js"></script>
+    <script src="./ajax.js"></script>
 </head>
 
 <body>
     <section id="chessboard" class="clear"> </section>
     <section id="mask">
         <aside class="conBox">
-            <h1 class="borderBot">小依，选择棋盘规格哇。</h1>
-            <p id="subBtn" class="border">-</p>
-            <p id="gridNum" value="10" class="borderTop borderBot">10</p>
-            <p id="addBtn" class="border">+</p> <button id="submitBtn">确认</button> </aside>
+            <h1 class="borderBot">五子棋</h1>
+            <button id="submitBtn">开始游戏</button> </aside>
     </section>
     <div style="text-align:center;"> </div>
 </body>
