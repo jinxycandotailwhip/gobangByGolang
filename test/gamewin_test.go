@@ -29,11 +29,11 @@ var coors3 = map[variable.Coordinate]bool{
 }
 
 var coors4 = map[variable.Coordinate]bool{
-	{8, 4}: true,
-	{7, 7}: true,
-	{6, 6}: true,
-	{5, 5}: true,
+	{0, 0}: true,
+	{3, 3}: true,
 	{4, 4}: true,
+	{5, 5}: true,
+	{6, 6}: true,
 }
 
 func TestGameWin(t *testing.T) {

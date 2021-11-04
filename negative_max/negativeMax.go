@@ -36,7 +36,7 @@ func negaMax(isAI bool, depth, alpha, beta int) int {
 	for nextStep := range blankList {
 		variable.SearchCount++
 		// 如果没有相邻点就不用考虑
-		if !hasNeighbour(nextStep) {
+		if !HasNeighbour(nextStep) {
 			continue
 		}
 		if isAI {
@@ -54,10 +54,10 @@ func negaMax(isAI bool, depth, alpha, beta int) int {
 		delete(variable.List3, nextStep)
 
 		if value > alpha {
-			fmt.Println(value, "alpha:", alpha, "beta:", beta)
-			fmt.Println(variable.List3)
+			// fmt.Println(value, "alpha:", alpha, "beta:", beta)
 			if depth == variable.DEPTH {
 				variable.NextPoint = nextStep
+				fmt.Println("nextPoint", variable.NextPoint)
 			}
 			if value >= beta {
 				variable.CutCount++
@@ -119,7 +119,7 @@ func evaluation(isAI bool) int {
 	// 计算自己的得分
 	scoreAllArr := make(map[*scoreShape]bool)
 	myScore := 0
-	for coor, _ := range myList {
+	for coor := range myList {
 		m, n := coor[0], coor[1]
 		myScore += calScore(m, n, 0, 1, enemyList, myList, scoreAllArr)
 		myScore += calScore(m, n, 1, 0, enemyList, myList, scoreAllArr)
@@ -130,7 +130,7 @@ func evaluation(isAI bool) int {
 	// 计算敌方的得分
 	scoreAllArrEnemy := make(map[*scoreShape]bool)
 	enemyScore := 0
-	for coor, _ := range enemyList {
+	for coor := range enemyList {
 		m, n := coor[0], coor[1]
 		enemyScore += calScore(m, n, 0, 1, myList, enemyList, scoreAllArrEnemy)
 		enemyScore += calScore(m, n, 1, 0, myList, enemyList, scoreAllArrEnemy)
@@ -204,14 +204,18 @@ func calScore(m, n, xDirect, yDirect int, enemyList, myList map[variable.Coordin
 	return maxScoreShape.score
 }
 
-func hasNeighbour(coor variable.Coordinate) bool {
+func HasNeighbour(coor variable.Coordinate) bool {
 	for i := -1; i < 2; i++ {
 		for j := -1; j < 2; j++ {
 			// i==0 && j==0是这个点本身
 			if i == 0 && j == 0 {
 				continue
 			}
-			if variable.List3[coor] {
+			cur := variable.Coordinate{
+				coor[0] + i,
+				coor[1] + j,
+			}
+			if variable.List3[cur] {
 				return true
 			}
 		}
