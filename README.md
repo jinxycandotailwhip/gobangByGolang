@@ -27,6 +27,11 @@ server {
 ```
 make run
 ```
+或者编译运行
+```
+make build
+./bin/gobang
+```
 ### 访问localhost就可以看到前端页面了
 
 ### 单元测试
