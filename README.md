@@ -40,8 +40,8 @@ make e2etest
 ```
 ## 最后
 本项目参考了一个大哥用python写的代码和另一位大哥用vue.js写的代码，深表感谢，代码仓库地址如下:  
-> https://github.com/colingogogo/gobang_AI
-> https://github.com/lihongxun945/gobang
+> https://github.com/colingogogo/gobang_AI  
+> https://github.com/lihongxun945/gobang  
 
 我的js写的很不规范，属于是拿来了个页面能跑就行，请不要参考我的js代码。
 
