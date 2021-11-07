@@ -1,9 +1,7 @@
-
         // onload为浏览器对象中的事件,页面载入时触发 
         window.onload = function() {
             var grid;
             var chessArr = [];
-            var timer = 0;
             var lineNum = 15;
             // 获取元素 
             var box = document.getElementById('chessboard');
@@ -40,18 +38,6 @@
                     dom.setAttribute('class', this.color);
                     return dom;
                 }
-                this.ligature = function(arr) {
-                    // map() 方法返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值。 
-                    //是就返回这个site 
-                    // 给白棋一个标识号,方便在下列judge中判断 
-                    var whiteChess = arr.map(function(s) {
-                        // parseInt() 函数可解析一个字符串，并返回一个整数。 
-                        return (s.color == 'white') ? parseInt(s.site) : 0;
-                    });
-                    var blackChess = arr.map(function(s) {
-                        return (s.color == 'black') ? parseInt(s.site) : 0;
-                    });
-                }
             }
 
             function playChess(i) {
@@ -62,14 +48,25 @@
 
 
                     // ai
-                    console.log("ai's turn")
-                    chessArr[i].ligature(chessArr);
-                    chessArr[parseInt(i)+1] = new Chess();
-                    chessArr[parseInt(i)+1].color = 'black';
-                    chessBox[parseInt(i)+1].appendChild(chessArr[parseInt(i)+1].chessDom());
-                    chessArr[parseInt(i)+1].ligature(chessArr);
+                    console.log("ai's turn!")
+                    aiCalculate(i)
                 } else {
                     alert('此处有子!');
                 }
             }
+
+            function aiCalculate(i) {
+                a = ajax_method("api", "index="+i, "get", function(x){
+                    if (x == "youWin"){
+                        alert('you win')
+                    } else if (x == "aiWin"){
+                        alert('ai win')
+                    }
+                    console.log("success:", x)
+                    chessArr[parseInt(x)] = new Chess();
+                    chessArr[parseInt(x)].color = 'black';
+                    chessBox[parseInt(x)].appendChild(chessArr[parseInt(x)].chessDom());
+                })
+            }
+
         };

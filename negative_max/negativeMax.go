@@ -112,8 +112,8 @@ func evaluation(isAI bool) int {
 		myList = variable.List1
 		enemyList = variable.List2
 	} else {
-		myList = variable.List1
-		enemyList = variable.List2
+		myList = variable.List2
+		enemyList = variable.List1
 	}
 
 	// 计算自己的得分
