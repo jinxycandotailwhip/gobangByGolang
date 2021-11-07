@@ -7,6 +7,7 @@
             var box = document.getElementById('chessboard');
             var chessBox = box.getElementsByTagName('div');
             var submitBtn = document.getElementById('submitBtn');
+            var restartBtn = document.getElementById('restartBtn');
             submitBtn.onclick = function() {
                     var chessMaxNum = lineNum * lineNum;
                     var chessWH = 90 / lineNum;
@@ -26,6 +27,13 @@
                     };
                     mask.style.display = 'none';
                 }
+            restartBtn.onclick = function() {
+                ajax_method("api", "index=-1", "get", function(x){
+                    console.log(x);
+                    alert("重新开始游戏");
+                    location.reload();
+                })
+            }
                 //棋子对象 
             function Chess() {
                 this.color = 'white';
@@ -56,10 +64,11 @@
             }
 
             function aiCalculate(i) {
-                a = ajax_method("api", "index="+i, "get", function(x){
+                ajax_method("api", "index="+i, "get", function(x){
+                    arr = String(x).split(',')
                     if (x == "youWin"){
                         alert('you win')
-                    } else if (x == "aiWin"){
+                    } else if (arr[1] == "aiWin"){
                         alert('ai win')
                     }
                     console.log("success:", x)

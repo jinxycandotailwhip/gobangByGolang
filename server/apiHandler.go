@@ -16,14 +16,19 @@ func GobangHandler(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	indexReceived := query.Get("index")
 	zap.L().Debug("receive index:", zap.String("indexReceived: ", indexReceived))
-
-	// renew list1, list2, list3
 	indexInt, err := strconv.Atoi(indexReceived)
 	if err != nil {
 		zap.L().Error("fail to trans string to int", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	// restart game
+	if indexInt == -1 {
+		zap.L().Info("restart game")
+	}
+
+	// renew list1, list2, list3
 	playerCoor := Index2grid(indexInt)
 	variable.List2[playerCoor] = true
 	variable.List3[playerCoor] = true
@@ -42,11 +47,11 @@ func GobangHandler(w http.ResponseWriter, r *http.Request) {
 	variable.List3[aiCoor] = true
 	log.Default().Println("index responsed:", indexReturn)
 	// ai win
+	fmt.Fprint(w, indexReturn)
 	if negative_max.GameWin(variable.List1) {
 		zap.L().Info("ai win")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "aiWin")
+		fmt.Fprint(w, ",aiWin")
 		return
 	}
-	fmt.Fprint(w, indexReturn)
 }
