@@ -1,5 +1,7 @@
         // onload为浏览器对象中的事件,页面载入时触发 
+        var sessionID;
         window.onload = function() {
+            sessionID = randomString()
             var grid;
             var chessArr = [];
             var lineNum = 15;
@@ -26,7 +28,7 @@
                     };
                     mask.style.display = 'none';
                 }
-                //棋子对象 
+            //棋子对象 
             function Chess() {
                 this.color = 'white';
                 this.site = 0;
@@ -56,12 +58,19 @@
             }
 
             function aiCalculate(i) {
-                ajax_method("api", "index="+i, "get", function(x){
+                ajax_method("api", "index="+i+"&sessionID="+sessionID, "get", function(x){
                     arr = String(x).split(',')
                     if (x == "youWin"){
                         alert('you win')
                     } else if (arr[1] == "aiWin"){
-                        alert('ai win')
+                        console.log("success:", x)
+                        chessArr[parseInt(x)] = new Chess();
+                        chessArr[parseInt(x)].color = 'black';
+                        chessBox[parseInt(x)].appendChild(chessArr[parseInt(x)].chessDom());
+                        setTimeout(function(){
+                            alert('ai win')
+                         },0)
+                        return 
                     }
                     console.log("success:", x)
                     chessArr[parseInt(x)] = new Chess();
@@ -70,4 +79,14 @@
                 })
             }
 
+            function randomString(e) {
+                var t = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+                a = t.length
+                n = ""
+                for (i = 0; i<32; i++) {
+                    n +=t.charAt(Math.floor(Math.random()*a));
+                }
+                return n
+            }
         };
+

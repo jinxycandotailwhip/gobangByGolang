@@ -1,3 +1,6 @@
+/**
+this file is to test fuction GameWin
+**/
 package test
 
 import (

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gobang/negative_max"
 	"gobang/variable"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -15,7 +14,29 @@ func GobangHandler(w http.ResponseWriter, r *http.Request) {
 	// get index from frontend
 	query := r.URL.Query()
 	indexReceived := query.Get("index")
+	sessionID := query.Get("sessionID")
 	zap.L().Debug("receive index:", zap.String("indexReceived: ", indexReceived))
+	zap.L().Debug("sessionID:", zap.String("sessionID: ", indexReceived))
+	session, ok := variable.SessionMap[sessionID]
+	if !ok {
+		// TODO:现在直接创建一个新的session，后续加上推送刷新前端页面
+		zap.L().Debug("fail to get session")
+		variable.SessionMap[sessionID] = &variable.SessionInfo{
+			List1:       make(map[variable.Coordinate]bool),
+			List2:       make(map[variable.Coordinate]bool),
+			List3:       make(map[variable.Coordinate]bool),
+			ListAll:     []int{},
+			NextPoint:   [2]int{0, 0},
+			CutCount:    0,
+			SearchCount: 0,
+		}
+		session, ok = variable.SessionMap[sessionID]
+		if !ok {
+			zap.L().Error("fail to creat session")
+			return
+		}
+	}
+
 	indexInt, err := strconv.Atoi(indexReceived)
 	if err != nil {
 		zap.L().Error("fail to trans string to int", zap.Error(err))
@@ -30,27 +51,27 @@ func GobangHandler(w http.ResponseWriter, r *http.Request) {
 
 	// renew list1, list2, list3
 	playerCoor := Index2grid(indexInt)
-	variable.List2[playerCoor] = true
-	variable.List3[playerCoor] = true
+	session.List2[playerCoor] = true
+	session.List3[playerCoor] = true
 	// you win
-	if negative_max.GameWin(variable.List2) {
+	if negative_max.GameWin(session.List2) {
 		zap.L().Info("you win")
+		session.Finish = true
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "youWin")
 		return
 	}
 
 	// get ai index and response
-	aiCoor := negative_max.AI()
-	log.Default().Println("aiCoor:", aiCoor)
+	aiCoor := negative_max.AI(session)
 	indexReturn := Grid2index(aiCoor)
-	variable.List1[aiCoor] = true
-	variable.List3[aiCoor] = true
-	log.Default().Println("index responsed:", indexReturn)
+	session.List1[aiCoor] = true
+	session.List3[aiCoor] = true
 	// ai win
 	fmt.Fprint(w, indexReturn)
-	if negative_max.GameWin(variable.List1) {
+	if negative_max.GameWin(session.List1) {
 		zap.L().Info("ai win")
+		session.Finish = true
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, ",aiWin")
 		return

@@ -3,6 +3,8 @@ package negative_max
 import (
 	"fmt"
 	"gobang/variable"
+
+	"go.uber.org/zap"
 )
 
 type scoreShape struct {
@@ -11,57 +13,57 @@ type scoreShape struct {
 	direct [2]int
 }
 
-func AI() [2]int {
-	_ = negaMax(true, variable.DEPTH, -9999999, 9999999)
-	fmt.Println("本次共剪枝次数: ", variable.CutCount)
-	fmt.Println("本次共搜索次数: ", variable.SearchCount)
-	return variable.NextPoint
+func AI(session *variable.SessionInfo) [2]int {
+	fmt.Println(len(variable.SessionMap))
+	_ = negaMax(true, variable.DEPTH, -9999999, 9999999, session)
+	fmt.Println("本次共剪枝次数: ", session.CutCount)
+	fmt.Println("本次共搜索次数: ", session.SearchCount)
+	return session.NextPoint
 }
 
-func negaMax(isAI bool, depth, alpha, beta int) int {
-	fmt.Println("----------depth----------", depth)
+func negaMax(isAI bool, depth, alpha, beta int, session *variable.SessionInfo) int {
 	// 判断游戏是否结束 || 搜索深度是否达到
-	if GameWin(variable.List1) || GameWin(variable.List2) || depth == 0 {
-		return evaluation(isAI)
+	if GameWin(session.List1) || GameWin(session.List2) || depth == 0 {
+		return evaluation(isAI, session)
 	}
 	// blankList是棋面上还没有下的点
 	blankList := make(map[variable.Coordinate]bool)
 	for m := 0; m < 15; m++ {
 		for n := 0; n < 15; n++ {
-			if !variable.List3[variable.Coordinate{m, n}] {
+			if !session.List3[variable.Coordinate{m, n}] {
 				blankList[variable.Coordinate{m, n}] = true
 			}
 		}
 	}
 	for nextStep := range blankList {
-		variable.SearchCount++
+		session.SearchCount++
 		// 如果没有相邻点就不用考虑
-		if !HasNeighbour(nextStep) {
+		if !HasNeighbour(nextStep, session) {
 			continue
 		}
 		if isAI {
-			variable.List1[nextStep] = true
+			session.List1[nextStep] = true
 		} else {
-			variable.List2[nextStep] = true
+			session.List2[nextStep] = true
 		}
-		variable.List3[nextStep] = true
+		session.List3[nextStep] = true
 
-		value := -negaMax(!isAI, depth-1, -beta, -alpha)
+		value := -negaMax(!isAI, depth-1, -beta, -alpha, session)
 		if isAI {
-			delete(variable.List1, nextStep)
+			delete(session.List1, nextStep)
 		} else {
-			delete(variable.List2, nextStep)
+			delete(session.List2, nextStep)
 		}
-		delete(variable.List3, nextStep)
+		delete(session.List3, nextStep)
 
 		if value > alpha {
 			// fmt.Println(value, "alpha:", alpha, "beta:", beta)
 			if depth == variable.DEPTH {
-				variable.NextPoint = nextStep
+				session.NextPoint = nextStep
 			}
 			// alpha beta 剪枝点
 			if value >= beta {
-				variable.CutCount++
+				session.CutCount++
 				return beta
 			}
 			alpha = value
@@ -107,14 +109,14 @@ func GameWin(list map[variable.Coordinate]bool) bool {
 	return false
 }
 
-func evaluation(isAI bool) int {
+func evaluation(isAI bool, session *variable.SessionInfo) int {
 	var myList, enemyList map[variable.Coordinate]bool
 	if isAI {
-		myList = variable.List1
-		enemyList = variable.List2
+		myList = session.List1
+		enemyList = session.List2
 	} else {
-		myList = variable.List2
-		enemyList = variable.List1
+		myList = session.List2
+		enemyList = session.List1
 	}
 
 	// 计算自己的得分
@@ -173,7 +175,7 @@ func calScore(m, n, xDirect, yDirect int, enemyList, myList map[variable.Coordin
 			// 当前方向上只取最大得分，如果当前score比之前计算的得分大，那么覆盖之前的得分（三连取代二连）
 			if score > maxScoreShape.score {
 				if tmpShape5 == [5]int{1, 1, 1, 1, 1} {
-					print("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwin")
+					zap.L().Info("win!!!!!!!!!!!")
 				}
 				maxScoreShape.score = score
 				maxScoreShape.points = [][2]int{
@@ -205,7 +207,7 @@ func calScore(m, n, xDirect, yDirect int, enemyList, myList map[variable.Coordin
 	return maxScoreShape.score
 }
 
-func HasNeighbour(coor variable.Coordinate) bool {
+func HasNeighbour(coor variable.Coordinate, session *variable.SessionInfo) bool {
 	for i := -1; i < 2; i++ {
 		for j := -1; j < 2; j++ {
 			// i==0 && j==0是这个点本身
@@ -216,7 +218,7 @@ func HasNeighbour(coor variable.Coordinate) bool {
 				coor[0] + i,
 				coor[1] + j,
 			}
-			if variable.List3[cur] {
+			if session.List3[cur] {
 				return true
 			}
 		}

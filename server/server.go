@@ -8,6 +8,10 @@ import (
 )
 
 func StartServer() {
+	go func() {
+		tick := NewMyTick(10, GarbageCollection)
+		tick.Start()
+	}()
 	r := mux.NewRouter()
 	log.Default().Println("gobang backend server starting")
 	r.HandleFunc("/api", GobangHandler)
