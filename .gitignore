@@ -2,4 +2,4 @@
 .vscode
 
 # 二进制文件
-./bin/*
+bin/
