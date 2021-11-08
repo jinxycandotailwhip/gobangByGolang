@@ -1,13 +1,11 @@
 package variable
 
-import "math"
-
 const (
 	GRID_WIDTH = 40
 	COLUMN     = 15
 	ROW        = 15
 	RATIO      = 1 // 进攻系数，大于1为进攻型，小于1位防守型
-	DEPTH      = 2 // 搜索深度
+	DEPTH      = 3 // 搜索深度
 )
 
 // 棋盘的评估分数
@@ -23,7 +21,7 @@ var (
 		{1, 1, 0, 1, 1}: 5000,
 		{1, 0, 1, 1, 1}: 5000,
 		{0, 1, 1, 1, 1}: 5000,
-		{1, 1, 1, 1, 1}: math.MaxInt,
+		{1, 1, 1, 1, 1}: 9999999,
 	}
 	// 用[6]int就可以表示的局势
 	ShapeScoreList6 = map[[6]int]int{

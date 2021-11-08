@@ -3,7 +3,6 @@ package negative_max
 import (
 	"fmt"
 	"gobang/variable"
-	"math"
 )
 
 type scoreShape struct {
@@ -13,13 +12,14 @@ type scoreShape struct {
 }
 
 func AI() [2]int {
-	_ = negaMax(true, variable.DEPTH, math.MinInt, math.MaxInt)
+	_ = negaMax(true, variable.DEPTH, -9999999, 9999999)
 	fmt.Println("本次共剪枝次数: ", variable.CutCount)
 	fmt.Println("本次共搜索次数: ", variable.SearchCount)
 	return variable.NextPoint
 }
 
 func negaMax(isAI bool, depth, alpha, beta int) int {
+	fmt.Println("----------depth----------", depth)
 	// 判断游戏是否结束 || 搜索深度是否达到
 	if GameWin(variable.List1) || GameWin(variable.List2) || depth == 0 {
 		return evaluation(isAI)
@@ -45,6 +45,7 @@ func negaMax(isAI bool, depth, alpha, beta int) int {
 			variable.List2[nextStep] = true
 		}
 		variable.List3[nextStep] = true
+
 		value := -negaMax(!isAI, depth-1, -beta, -alpha)
 		if isAI {
 			delete(variable.List1, nextStep)
@@ -57,8 +58,8 @@ func negaMax(isAI bool, depth, alpha, beta int) int {
 			// fmt.Println(value, "alpha:", alpha, "beta:", beta)
 			if depth == variable.DEPTH {
 				variable.NextPoint = nextStep
-				fmt.Println("nextPoint", variable.NextPoint)
 			}
+			// alpha beta 剪枝点
 			if value >= beta {
 				variable.CutCount++
 				return beta
@@ -95,10 +96,10 @@ func GameWin(list map[variable.Coordinate]bool) bool {
 				return true
 			} else if m < variable.ROW-4 && n > 3 &&
 				list[[2]int{m, n}] &&
-				list[[2]int{m + 1, n + 1}] &&
-				list[[2]int{m + 2, n + 2}] &&
-				list[[2]int{m + 3, n + 3}] &&
-				list[[2]int{m + 4, n + 4}] {
+				list[[2]int{m + 1, n - 1}] &&
+				list[[2]int{m + 2, n - 2}] &&
+				list[[2]int{m + 3, n - 3}] &&
+				list[[2]int{m + 4, n - 4}] {
 				return true
 			}
 		}

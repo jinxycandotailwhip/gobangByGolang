@@ -21,11 +21,11 @@ var coors2 = map[variable.Coordinate]bool{
 	{4, 6}: true,
 }
 var coors3 = map[variable.Coordinate]bool{
-	{8, 8}: true,
-	{7, 7}: true,
-	{6, 6}: true,
-	{5, 5}: true,
-	{4, 4}: true,
+	{0, 4}: true,
+	{1, 3}: true,
+	{2, 2}: true,
+	{3, 1}: true,
+	{4, 0}: true,
 }
 
 var coors4 = map[variable.Coordinate]bool{

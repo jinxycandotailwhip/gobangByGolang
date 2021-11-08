@@ -42,6 +42,7 @@ func GobangHandler(w http.ResponseWriter, r *http.Request) {
 
 	// get ai index and response
 	aiCoor := negative_max.AI()
+	log.Default().Println("aiCoor:", aiCoor)
 	indexReturn := Grid2index(aiCoor)
 	variable.List1[aiCoor] = true
 	variable.List3[aiCoor] = true
